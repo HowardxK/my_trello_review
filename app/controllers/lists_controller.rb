@@ -1,9 +1,10 @@
 class ListsController < ApplicationController
   before_action :set_list, only: %i[ show edit update destroy ]
+  before_action :authenticate_user! # 登入才能看到使用者自己的列表
 
   # GET /lists or /lists.json
   def index
-    @lists = List.all
+    @lists = current_user.lists # 使用者只能看到自己的列表，看不到其他使用者的列表
   end
 
   # GET /lists/1 or /lists/1.json
@@ -12,7 +13,7 @@ class ListsController < ApplicationController
 
   # GET /lists/new
   def new
-    @list = List.new
+    @list = current_user.lists.new # 使用者建立自己的新列表
   end
 
   # GET /lists/1/edit
@@ -21,7 +22,7 @@ class ListsController < ApplicationController
 
   # POST /lists or /lists.json
   def create
-    @list = List.new(list_params)
+    @list = current_user.lists.new(list_params)
 
     respond_to do |format|
       if @list.save
@@ -59,11 +60,12 @@ class ListsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_list
-      @list = List.find(params[:id])
+      @list = current_user.lists.find(params[:id]) # 從使用者自己的列表去找列表
     end
 
     # Only allow a list of trusted parameters through.
     def list_params
-      params.require(:list).permit(:name, :user_id, :position)
+      # params.require(:list).permit(:name, :user_id, :position)
+      params.require(:list).permit(:name, :position) # 因為已經登入，所以不該有 user_id 可寫入
     end
 end
