@@ -12,8 +12,10 @@
         <!-- 而 v-for 的 list.cards 來自  application.html.erb 的 data-lists="<%= @lists.to_json(include: :cards) %>" -->
 
         <div class="input-area">
-          <textarea class="content" v-model="content"></textarea>
-            <button class="button" @click="createCard">新增卡片</button>
+          <button v-if="!editing" class="button" @click="newCard">新增卡片</button>
+          <textarea v-if="editing" class="content" v-model="content"></textarea>
+          <button v-if="editing" class="button" @click="createCard">建立卡片</button>
+          <button v-if="editing" class="button" @click="editing = false">取消</button>
         </div>
       </div>
     </div>
@@ -34,10 +36,16 @@ export default {
   data: function() {
     return {
       content: '',
-      cards: this.list.cards
+      cards: this.list.cards,
+      editing: false
     }
   },
   methods: {
+    newCard(event) {
+      event.preventDefault()
+      this.editing = true;
+    },
+
     createCard(event) {
       event.preventDefault()
      
@@ -52,9 +60,9 @@ export default {
         data,
         dataType: 'json',
         success: resp => {
-          console.log(resp)
           this.cards.push(resp)
           this.content = ""
+          this.editing = false
         },
         error: err => {
           console.log(err)
