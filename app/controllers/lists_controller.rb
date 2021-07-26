@@ -1,10 +1,15 @@
 class ListsController < ApplicationController
-  before_action :set_list, only: %i[ show edit update destroy ]
+  before_action :set_list, only: %i[ show edit update destroy move ]
   before_action :authenticate_user! # 登入才能看到使用者自己的列表
 
   # GET /lists or /lists.json
   def index
     @lists = current_user.lists # 使用者只能看到自己的列表，看不到其他使用者的列表
+  end
+
+  def move
+    @list.insert_at(list_params[:position].to_i)
+    render 'show.json'
   end
 
   # GET /lists/1 or /lists/1.json
