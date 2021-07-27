@@ -5,7 +5,10 @@
       <!-- list.name 的 list 來自 props: ["list"] -->
 
       <div class="deck">
-        <Card v-for="card in cards" :card="card" :key="card.id"></Card>
+        <draggable v-model="cards" ghost-class="ghost" group="list" @change="cardMoved">
+          <Card v-for="card in cards" :card="card" :key="card.id"></Card>
+        </draggable>
+        
         <!-- 為了避免重複加上 :key="card.id" -->
         <!-- :card="card" 的 card 是在 v-for 定義的 card  -->
         <!-- :card 指的是在 card.vue 的 props: ["card"] 會將 card 傳給 :card -->
@@ -26,12 +29,14 @@
 <script>
 import Rails from '@rails/ujs'     // 引入 rails 內建的 ajax
 import Card from 'components/card' // 引入 'components/card' 取名叫做 Card
+import draggable from 'vuedraggable'
 
 export default {
   name: 'List',
   props: ["list"],     // 設定一個叫做 list 的 property 但需要傳資料進來
   components: {
-    Card               // 註冊 元件 Card: Card 前面可以自己取 後面是 import 進來的 Card ， es6 可以只寫一半 
+    Card,               // 註冊 元件 Card: Card 前面可以自己取 後面是 import 進來的 Card ， es6 可以只寫一半 
+    draggable   // 註冊 draggable draggable: draggable
   },
   data: function() {
     return {
@@ -41,6 +46,32 @@ export default {
     }
   },
   methods: {
+    cardMoved(event) {
+      let evt = event.added || event.moved
+      if (evt) {
+        let el = evt.element
+        let card_id = el.id
+
+        let data = new FormData()
+        data.append("card[list_id", this.list.id)
+        data.append("card[position]", evt.newIndex + 1) // 陣列與 position 差 1
+
+        Rails.ajax({
+          // /cards/2/move
+          url: `cards/${card_id}/move`,
+          type: 'PUT',
+          data, // es6 簡寫 data: data
+          dataType: 'json',
+          success: resp => {
+            console.log(resp)
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+      }
+    },
+    
     newCard(event) {
       event.preventDefault()
       this.editing = true;
@@ -76,6 +107,10 @@ export default {
 // style
 // lang 加入 scss 巢狀功能，scoped 代表 css 只在這個 component 範圍內，不會污染到其他 css
 <style lang="scss" scoped>    
+.ghost {
+  @apply .border-2 .border-gray-400 .border-dashed .bg-gray-200;
+}
+
 .list {
   @apply .bg-gray-300 .mx-2 .w-64 .rounded .px-3 .py-1;
 

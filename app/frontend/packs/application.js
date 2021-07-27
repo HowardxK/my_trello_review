@@ -32,7 +32,7 @@ document.addEventListener("turbolinks:load", function(event) {
       },
       methods: {
         listMoved(event) {
-          console.log(event)
+          // console.log(event)
           // 打 api 調整 list 的 oldIndex 和 newIndex
           let data = new FormData()
           data.append("list[position]", event.moved.newIndex + 1)
@@ -46,7 +46,7 @@ document.addEventListener("turbolinks:load", function(event) {
             data, // data: data es6 同名只寫一個
             dataType: 'json',
             success: resp => {
-              console.log(resp)
+              // console.log(resp)
             },
             error: err => {
               console.log(err)
