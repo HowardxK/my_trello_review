@@ -1,27 +1,9 @@
 class CardsController < ApplicationController
   before_action :set_card, only: %i[ show edit update destroy move ]
 
-  # GET /cards or /cards.json
-  def index
-    @cards = Card.all
-  end
-
   def move
     @card.update(card_params)
     render 'show.json'
-  end
-
-  # GET /cards/1 or /cards/1.json
-  def show
-  end
-
-  # GET /cards/new
-  def new
-    @card = Card.new
-  end
-
-  # GET /cards/1/edit
-  def edit
   end
 
   # POST /cards or /cards.json

@@ -12,19 +12,6 @@ class ListsController < ApplicationController
     render 'show.json'
   end
 
-  # GET /lists/1 or /lists/1.json
-  def show
-  end
-
-  # GET /lists/new
-  def new
-    @list = current_user.lists.new # 使用者建立自己的新列表
-  end
-
-  # GET /lists/1/edit
-  def edit
-  end
-
   # POST /lists or /lists.json
   def create
     @list = current_user.lists.new(list_params)
