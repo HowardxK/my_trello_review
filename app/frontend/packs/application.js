@@ -24,7 +24,8 @@ document.addEventListener("turbolinks:load", function(event) {
     new Vue({
       el, // es6 el: el key 跟 value 一樣 可以只寫一個就好
       data: {
-        lists: JSON.parse(el.dataset.lists)
+        // lists: JSON.parse(el.dataset.lists) 使用 vue 的 life cycle 改寫
+        lists: []
       },
       components: {
         List,     // 註冊 元件 List: List es6 可只寫一個
@@ -53,6 +54,20 @@ document.addEventListener("turbolinks:load", function(event) {
             }
           })
         }
+      },
+      beforeMount() {
+        Rails.ajax({
+          url: '/lists.json',
+          type: 'GET',
+          dataType: 'json',
+          success: resp => {
+            this.lists = resp
+            // console.log(resp)
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
       }
     })
   } else {
